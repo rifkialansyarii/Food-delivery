@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('merchants', function (Blueprint $table) {
-            $table->id()->comment('Merchant ID');  
+            $table->id()->comment('Merchant ID'); 
+ 
             $table->string("name")->comment('Merchant name'); 
             $table->string("address")->comment('Merchant address');
             $table->string("phone")->comment('Merchant phone'); 

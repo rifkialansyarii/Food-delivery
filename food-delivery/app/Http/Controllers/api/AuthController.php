@@ -28,6 +28,16 @@ class AuthController extends Controller
 
         $users->save();
 
+        if ($payload["is_merchant"] == true) {
+            $users->role = "merchant";
+            $users->save();
+        }
+
+        if ($payload["is_driver"] == true) {
+            $users->role = "driver";
+            $users->save();
+        }
+
 
         return response()->json([
             'status' => 'success',
@@ -51,7 +61,7 @@ class AuthController extends Controller
         if (!Hash::check($payload['password'], $user->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid credentials',
+                'message' => 'Incorrect password',
             ], 401);
         }
 
@@ -63,6 +73,23 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'Login successful',
             'token' => $token,
+            "user" => $user,
+            "role" => $user->role
         ], 200);
+    }
+
+    function logout(Request $request) {
+        $user = $request->user();
+        $request->user()->currentAccessToken()->delete();
+        $user->tokens()->delete();
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Logout ' . ' device successfully',
+            'errors' => null,
+            'content' => null,
+        ];
+
+        return $response;
     }
 }

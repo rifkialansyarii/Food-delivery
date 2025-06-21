@@ -27,6 +27,8 @@ class RegisterRequest extends FormRequest
             'email' => 'required|email',
             'phone' => 'required|string|max:15',
             'password' => 'required|string',
+            "is_merchant" => "nullable",
+            "is_driver" => "nullable",
         ];
     }
 
