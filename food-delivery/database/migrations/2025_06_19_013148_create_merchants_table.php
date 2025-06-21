@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('merchants', function (Blueprint $table) {
             $table->id()->comment('Merchant ID'); 
- 
+            $table->unsignedBigInteger("user_id");
             $table->string("name")->comment('Merchant name'); 
             $table->string("address")->comment('Merchant address');
             $table->string("phone")->comment('Merchant phone'); 
@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string("status")->default('Open')->comment('Merchant status');
             $table->boolean("is_verified")->default('1')->comment('Merchant verification status'); 
             $table->timestamps(); 
+
+            $table->foreign("user_id")->references("id")->on("users");
         });
     }
 

@@ -22,4 +22,8 @@ class Merchant extends Model
         'phone',
         'picture',
     ]; // Kolom yang dapat diisi secara massal
+
+    function order(): HasMany {
+        return $this->hasMany(Order::class, "merchant_id", "id");
+    }
 }

@@ -18,6 +18,10 @@ class Menu extends Model
         return $this->hasMany(Order::class, 'menu_id');
     }
 
+    function driver(): BelongsTo {
+        return $this->belongsTo(User::class, "driver_id", "id");
+    }
+
     protected $table = 'menus'; // Nama tabel yang digunakan oleh model ini
     protected $guarded = ['id']; // Kunci primer tabel ini
     

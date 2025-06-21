@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id()->comment('Menu ID'); 
-            $table->foreignId('merchant_id')->constrained('merchants')->comment('Merchant ID')->nullable();
+            // $table->foreignId('merchant_id')->constrained('merchants')->comment('Merchant ID')->nullable();
+            $table->unsignedBigInteger("merchant_id");
             $table->string("name")->comment('Menu name'); 
             $table->string("price")->comment('Menu price'); 
             $table->string("picture")->nullable()->comment('Menu picture'); 
             $table->string("status")->default('Available')->comment('Menu status');
 
             $table->timestamps();
+
+            $table->foreign("merchant_id")->references("id")->on("merchants");
         });
     }
 

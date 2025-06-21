@@ -13,15 +13,20 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->comment('User ID')->nullable();
-            $table->foreignId('menu_id')->constrained('menus')->comment('Menu ID')->nullable();
-            $table->foreignId('driver_id')->constrained('drivers')->comment('Driver')->default(0)->nullable();
+            // $table->foreignId('user_id')->constrained('users')->comment('User ID')->nullable();
+            // $table->foreignId('menu_id')->constrained('menus')->comment('Menu ID')->nullable();
+            // $table->foreignId('driver_id')->constrained('drivers')->comment('Driver')->default(0)->nullable();
+            $table->unsignedBigInteger("driver_id");
+            $table->unsignedBigInteger("merchant_id");
             $table->string('amount')->comment('Order amount');
             $table->string('total')->comment('Total');
             $table->string('status')->default('Selesai')->comment('Order status');
             $table->string('location')->comment('Delivery address');
 
             $table->timestamps();
+
+            $table->foreign("driver_id")->references("id")->on("users");
+            $table->foreign("merchant_id")->references("id")->on("merchants");
         });
     }
 
