@@ -22,4 +22,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('merchants', MerchantController::class);
     Route::resource('menus', MenuController::class);
     Route::resource('orders', OrderController::class);
+    Route::get("/rand-menu", [MenuController::class, "getRandomMenu"]);
+    Route::get("/merchant/order", [OrderController::class, "merchantGetOrder"]);
 });

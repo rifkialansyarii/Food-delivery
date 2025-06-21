@@ -24,22 +24,18 @@ class OrderRequest extends FormRequest
     {
         if ($this->isMethod('put') || $this->isMethod('patch')) {
             return [
-                'amount' => 'sometimes|required|numeric|min:0',
                 'total' => 'sometimes|required|numeric|min:0',
                 'location' => 'sometimes|required|string|max:255',
+                'driver_id' => 'nullable|exists:drivers,id',
             ];
         }
 
         // Add this to ensure all paths return a value
 
         return [
-            'user_id' => 'exists:users,id|nullable',
             'merchant_id' => 'required|exists:merchants,id',
-            'menu_id' => 'required|exists:menus,id',
-            'driver_id' => 'nullable|exists:drivers,id',
-            'amount' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
             'location' => 'required|string|max:255',
+            "menu" => "required|array"
         ];
 
     }

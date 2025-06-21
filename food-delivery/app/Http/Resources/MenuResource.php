@@ -15,20 +15,20 @@ class MenuResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'menus' => [
+                'id' => $this->id,
                 'name' => $this->name,
                 'price' => $this->price,
-                'picture' => $this->picture,
-            ],
-
-            'merchants' => [
-                'name' => $this->merchants->name,
-                'address' => $this->merchants->address,
-                'phone' => $this->merchants->phone,
-                'picture' => $this->merchants->picture,
-                'status' => $this->merchants->status,
-                'is_verified' => $this->merchants->is_verified,
-            ],
+                'picture' => $this->whenNotNull($this->picture),
+                'merchants' => [
+                    'id' => $this->merchants->id,
+                    'user_id' => $this->merchants->user_id,
+                    'name' => $this->merchants->name,
+                    'address' => $this->merchants->address,
+                    'phone' => $this->merchants->phone,
+                    'picture' => $this->merchants->picture,
+                    'status' => $this->merchants->status,
+                    'is_verified' => $this->merchants->is_verified,
+                ],
         ];
     }
 }
