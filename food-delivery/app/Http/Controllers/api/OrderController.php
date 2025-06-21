@@ -36,28 +36,40 @@ class OrderController extends Controller
         $user = Auth::user();
         $payload = $request->validated();
         
-        // Create a new order
-        $order = Order::create($payload);
-        $order->user_id = $user->id;
-        $order->merchant_id = $payload["merchant_id"];
-        $order->save();
+        $latestOrder = Order::firstWhere("user_id", $user->id);
 
-        foreach ($payload["menu"] as $menu) {
-            $detailOrder = DetailOrder::create();
-            $detailOrder->order_id = $order->id;
-            $detailOrder->user_id =  $user->id;
-            $detailOrder->menu_id = $menu["id"];
-            $detailOrder->stok = $menu["stok"];
-            $detailOrder->merchant_id = $payload["merchant_id"];
-            $detailOrder->save();
+        if ($latestOrder->is_done == false) {
+            foreach ($payload["menu"] as $menu) {
+                $detailOrder = DetailOrder::create();
+                $detailOrder->order_id = $latestOrder->id;
+                $detailOrder->user_id =  $user->id;
+                $detailOrder->menu_id = $menu["id"];
+                $detailOrder->stok = $menu["stok"];
+                $detailOrder->merchant_id = $payload["merchant_id"];
+                $detailOrder->save();
+
+                return $latestOrder;
+            }
+        } else {
+            // Create a new order
+            $order = Order::create($payload);
+            $order->user_id = $user->id;
+            $order->is_done = false;
+            $order->merchant_id = $payload["merchant_id"];
+            $order->save();
+
+            foreach ($payload["menu"] as $menu) {
+                $detailOrder = DetailOrder::create();
+                $detailOrder->order_id = $order->id;
+                $detailOrder->user_id =  $user->id;
+                $detailOrder->menu_id = $menu["id"];
+                $detailOrder->stok = $menu["stok"];
+                $detailOrder->merchant_id = $payload["merchant_id"];
+                $detailOrder->save();
+            }
+
+            return $order;
         }
-
-        // Return the created order as a JSON response
-        // return (new OrderResource($order))
-        //     ->response()
-        //     ->setStatusCode(201);
-
-        return $order;
     }
 
     public function show($id)
