@@ -16,12 +16,14 @@ return new class extends Migration
             // $table->foreignId('user_id')->constrained('users')->comment('User ID')->nullable();
             // $table->foreignId('menu_id')->constrained('menus')->comment('Menu ID')->nullable();
             // $table->foreignId('driver_id')->constrained('drivers')->comment('Driver')->default(0)->nullable();
-            $table->unsignedBigInteger("driver_id");
-            $table->unsignedBigInteger("user_id");
-            $table->unsignedBigInteger("merchant_id");
+            $table->unsignedBigInteger("driver_id")->nullable();
+            $table->unsignedBigInteger("user_id")->nullable();
+            $table->unsignedBigInteger("merchant_id")->nullable();
             $table->unsignedBigInteger("menu_id");
             $table->string('total')->comment('Total');
             $table->enum('status', ["selesai", "diantar", "pending"])->default('selesai')->comment('Order status');
+            $table->double("latitude");
+            $table->double("longtitude");
             $table->string('location')->comment('Delivery address');
 
             $table->timestamps();

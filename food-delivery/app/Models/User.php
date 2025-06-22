@@ -50,8 +50,8 @@ class User extends Authenticatable
         ];
     }
 
-    function merchant(): BelongsTo {
-        return $this->belongsTo(Merchant::class, "user_id", "id");
+    function merchant(): HasMany {
+        return $this->HasMany(Merchant::class, "user_id", "id");
     }
 
     function order(): HasMany {

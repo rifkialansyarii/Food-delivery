@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $with = ['users', 'menus', 'drivers', 'detail_order'];
+    protected $with = ['users', 'menus', 'drivers', 'detail_order', "merchant"];
 
     public function users(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    function merchant() : BelongsTo {
+        return $this->belongsTo(Merchant::class, "merchant_id");
     }
 
     public function menus(): BelongsTo
@@ -38,5 +42,9 @@ class Order extends Model
         'amount',
         'total',
         'location',
+    ];
+
+    protected $casts = [
+        'is_done' => 'boolean',
     ];
 }

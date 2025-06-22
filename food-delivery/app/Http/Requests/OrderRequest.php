@@ -35,6 +35,8 @@ class OrderRequest extends FormRequest
         return [
             'merchant_id' => 'required|exists:merchants,id',
             'location' => 'required|string|max:255',
+            'longtitude' => 'required',
+            'latitude' => 'required',
             "menu" => "required|array"
         ];
 

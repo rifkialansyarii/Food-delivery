@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string("status")->default('Open')->comment('Merchant status');
             $table->boolean("is_verified")->default('1')->comment('Merchant verification status'); 
             $table->timestamps(); 
+            $table->double("latitude");
+            $table->double("longtitude");
 
             $table->foreign("user_id")->references("id")->on("users");
         });

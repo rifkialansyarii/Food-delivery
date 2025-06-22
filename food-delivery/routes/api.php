@@ -24,4 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('orders', OrderController::class);
     Route::get("/rand-menu", [MenuController::class, "getRandomMenu"]);
     Route::get("/merchant/order", [OrderController::class, "merchantGetOrder"]);
+    Route::get("/order/current", [OrderController::class, "getCurrentOrder"]);
+    Route::post("/driver/order", [OrderController::class, "driverGetOrder"]);
+    Route::post("/driver/order/{id}}", [OrderController::class, "driverTakeOrder"]);
 });

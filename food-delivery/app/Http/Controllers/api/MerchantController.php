@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MerchantRequest;
 use App\Http\Resources\MerchantResource;
+use App\Models\Merchant;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +14,7 @@ class MerchantController extends Controller
 {
     public function index(Request $request)
     {   
-        $merchants = \App\Models\Merchant::all();
+        $merchants = Merchant::all();
         return (MerchantResource::collection($merchants))
             -> response()
             ->setStatusCode(200);
@@ -22,7 +24,13 @@ class MerchantController extends Controller
     {
 
         // Create a new merchant
-        $merchant = \App\Models\Merchant::create($request->validated());
+        $user = Auth::user();
+        $payload = $request->validated();
+        $merchant = Merchant::create($payload);
+        $merchant->user_id = $user->id;
+        $merchant->latitude = $request["latitude"];
+        $merchant->longtitude = $request["longtitude"];
+        $merchant->save();
 
         // Return the created merchant as a JSON response
         return (new MerchantResource($merchant))
@@ -32,7 +40,7 @@ class MerchantController extends Controller
 
     public function show($id)
     {
-        $merchant = \App\Models\Merchant::where('id', $id)->first();
+        $merchant = Merchant::where('id', $id)->first();
 
         if (!$merchant) {
             return response()->json([
@@ -48,7 +56,7 @@ class MerchantController extends Controller
 
     public function update(MerchantRequest $request, $id)
     {
-        $merchant = \App\Models\Merchant::where('id', $id)->first();
+        $merchant = Merchant::where('id', $id)->first();
 
         if (!$merchant) {
             return response()->json([
@@ -57,7 +65,8 @@ class MerchantController extends Controller
             ], 404);
         }
 
-        $merchant->update($request->validated());
+        $payload = $request->validated();
+        $merchant->update($payload);
 
         return (new MerchantResource($merchant))
             ->response()
@@ -66,7 +75,7 @@ class MerchantController extends Controller
 
     public function destroy($id)
     {
-        $merchant = \App\Models\Merchant::where('id', $id)->first();
+        $merchant = Merchant::where('id', $id)->first();
 
         if (!$merchant) {
             return response()->json([
@@ -85,12 +94,8 @@ class MerchantController extends Controller
 
     public function getOrders(){
         $users = Auth::user();
-        $merchant = \App\Models\Merchant::where('user_id', $users->id)->first();
-        $order = \App\Models\Order::where('status', 'open')->orWhere('merchant_id', $merchant->id)->get();
-
-
-
-
+        $merchant = Merchant::where('user_id', $users->id)->first();
+        $order = Order::where('status', 'open')->orWhere('merchant_id', $merchant->id)->get();
     }
 }
 

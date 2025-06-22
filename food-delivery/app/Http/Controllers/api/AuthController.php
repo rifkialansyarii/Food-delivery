@@ -49,7 +49,7 @@ class AuthController extends Controller
     {
         $payload = $request->validated();
 
-        $user = User::where('email', $payload['email'])->first();
+        $user = User::with("merchant")->where('email', $payload['email'])->first();
         
         if (!$user ) {
             return response()->json([

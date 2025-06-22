@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DriverGetOrderRequest;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\DetailOrder;
@@ -23,12 +24,48 @@ class OrderController extends Controller
         //     ->setStatusCode(200);
     }
 
+    function getCurrentOrder() {
+        $user = Auth::user();
+
+        $orders = Order::where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->where('is_done', false);
+            })->latest()->first();
+        return $orders;
+    }
+
     function merchantGetOrder() {
         $user = Auth::user();
         $merchant = Merchant::firstWhere("user_id", $user->id);
         $orders = Order::where("merchant_id", $merchant->id)->get();
 
         return $orders;
+    }
+
+    function driverGetOrder(DriverGetOrderRequest $request) {
+        $payload = $request->validated();
+
+        $order = Order::where('location', 'like', '%' . $payload["lokasi"] . '%')->get();
+
+        return $order;
+    }
+
+    function driverTakeOrder(string $id) {
+        $user = Auth::user();
+        $order = Order::firstWhere("id", $id);
+
+        if ($order->is_taken == true) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order already taken',
+            ], 422);
+        }
+
+        $order->is_taken = true;
+        $order->driver_id = $user->id;
+        $order->save();
+
+        return $order;
     }
 
     public function store(OrderRequest $request)
@@ -46,6 +83,7 @@ class OrderController extends Controller
                 $detailOrder->menu_id = $menu["id"];
                 $detailOrder->stok = $menu["stok"];
                 $detailOrder->merchant_id = $payload["merchant_id"];
+                $detailOrder->catatan = $menu["catatan"];
                 $detailOrder->save();
 
                 return $latestOrder;
@@ -56,6 +94,8 @@ class OrderController extends Controller
             $order->user_id = $user->id;
             $order->is_done = false;
             $order->merchant_id = $payload["merchant_id"];
+            $order->latitude = $payload["latitude"];
+            $order->longtitude = $payload["longtitude"];
             $order->save();
 
             foreach ($payload["menu"] as $menu) {
@@ -65,6 +105,7 @@ class OrderController extends Controller
                 $detailOrder->menu_id = $menu["id"];
                 $detailOrder->stok = $menu["stok"];
                 $detailOrder->merchant_id = $payload["merchant_id"];
+                $detailOrder->catatan = $menu["catatan"];
                 $detailOrder->save();
             }
 

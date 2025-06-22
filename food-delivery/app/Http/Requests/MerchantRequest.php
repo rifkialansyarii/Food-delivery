@@ -36,6 +36,8 @@ class MerchantRequest extends FormRequest
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
+            "latitude" => "required",
+            "longtitude" => "required",
         ];
     }
 
