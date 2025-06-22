@@ -26,7 +26,7 @@ class Order extends Model
 
     public function drivers(): BelongsTo
     {
-        return $this->belongsTo(Driver::class, 'driver_id');
+        return $this->belongsTo(User::class, 'driver_id');
     }
 
     function detail_order(): HasMany {
@@ -46,5 +46,7 @@ class Order extends Model
 
     protected $casts = [
         'is_done' => 'boolean',
+        'is_diambil' => 'boolean',
+        'is_taken' => 'boolean',
     ];
 }

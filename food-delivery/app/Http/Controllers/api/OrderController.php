@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DriverGetOrderRequest;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\UpdateOrderDriverRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\DetailOrder;
 use App\Models\Merchant;
@@ -45,8 +46,28 @@ class OrderController extends Controller
     function driverGetOrder(DriverGetOrderRequest $request) {
         $payload = $request->validated();
 
-        $order = Order::where('location', 'like', '%' . $payload["lokasi"] . '%')->get();
+        $order = Order::where('location', 'like', '%' . $payload["lokasi"] . '%')
+        ->where("status", "pending")
+        ->latest()
+        ->get();
 
+        return $order;
+    }
+
+    function driverHistoryOrder() {
+        $user = Auth::user();
+        $order = Order::where("driver_id", $user->id)
+            ->where("is_done", true)
+            ->get();
+        return $order;
+    }
+
+    function merchantHistoryOrder() {
+        $user = Auth::user();
+        $merchant = Merchant::firstWhere("user_id", $user->id);
+        $order = Order::where("merchant_id", $merchant->id)
+            ->where("is_done", true)
+            ->get();
         return $order;
     }
 
@@ -115,7 +136,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = \App\Models\Order::where('id', $id)->first();
+        $order = Order::where('id', $id)->first();
 
         if (!$order) {
             return response()->json([
@@ -124,14 +145,12 @@ class OrderController extends Controller
             ], 404);
         }
 
-        return (new OrderResource($order))
-            ->response()
-            ->setStatusCode(200);
+        return $order;
     }
 
     public function update(OrderRequest $request, $id)
     {
-        $order = \App\Models\Order::where('id', $id)->first();
+        $order = Order::where('id', $id)->first();
 
         if (!$order) {
             return response()->json([
@@ -149,7 +168,7 @@ class OrderController extends Controller
 
     public function destroy($id)
     {
-        $order = \App\Models\Order::where('id', $id)->first();
+        $order = Order::where('id', $id)->first();
 
         if (!$order) {
             return response()->json([
@@ -166,5 +185,21 @@ class OrderController extends Controller
         ], 200);
     }    
 
+    function updateStatusOrder(string $id, UpdateOrderDriverRequest $request) {
+        $payload = $request->validated();
+        $order = Order::firstWhere("id", $id);
+        
+        if ($payload["is_done"]) {
+            $order->is_done = $payload["is_done"];
+            $order->status = "selesai";
+            $order->save();
+        } else if ($payload["is_diambil"]) {
+            $order->is_diambil = $payload["is_diambil"];
+            $order->status = "diantar";
+            $order->save();
+        }
+
+        return $order;
+    }
 }
 

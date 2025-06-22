@@ -22,6 +22,8 @@ class Menu extends Model
         return $this->belongsTo(User::class, "driver_id", "id");
     }
 
+    protected $with = ['merchants', 'orders', 'driver'];
+
     protected $table = 'menus'; // Nama tabel yang digunakan oleh model ini
     protected $guarded = ['id']; // Kunci primer tabel ini
     

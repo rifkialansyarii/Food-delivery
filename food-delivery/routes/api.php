@@ -26,5 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get("/merchant/order", [OrderController::class, "merchantGetOrder"]);
     Route::get("/order/current", [OrderController::class, "getCurrentOrder"]);
     Route::post("/driver/order", [OrderController::class, "driverGetOrder"]);
-    Route::post("/driver/order/{id}}", [OrderController::class, "driverTakeOrder"]);
+    Route::post("/driver/order/{id}", [OrderController::class, "driverTakeOrder"]);
+    Route::put("/driver/order/{id}", [OrderController::class, "updateStatusOrder"]);
+    Route::get("/history/driver", [OrderController::class, "driverHistoryOrder"]);
+    Route::get("/history/merchant", [OrderController::class, "merchantHistoryOrder"]);
 });
