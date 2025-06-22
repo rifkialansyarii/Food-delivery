@@ -44,13 +44,17 @@ class OrderController extends Controller
     }
 
     function driverGetOrder(DriverGetOrderRequest $request) {
+        $user = Auth::user();
         $payload = $request->validated();
 
         $order = Order::where('location', 'like', '%' . $payload["lokasi"] . '%')
-        ->where("status", "pending")
-        ->latest()
-        ->get();
-
+            ->where('status', '!=', 'selesai')
+            ->where(function ($query) use ($user) {
+                $query->whereNull('driver_id')
+                    ->orWhere('driver_id', $user->id);
+            })
+            ->latest()
+            ->get();
         return $order;
     }
 
@@ -96,23 +100,9 @@ class OrderController extends Controller
         
         $latestOrder = Order::firstWhere("user_id", $user->id);
 
-        if ($latestOrder) {
-            if ($latestOrder->is_done == false) {
-                foreach ($payload["menu"] as $menu) {
-                $detailOrder = DetailOrder::create();
-                $detailOrder->order_id = $latestOrder->id;
-                $detailOrder->user_id =  $user->id;
-                $detailOrder->menu_id = $menu["id"];
-                $detailOrder->stok = $menu["stok"];
-                $detailOrder->merchant_id = $payload["merchant_id"];
-                $detailOrder->catatan = $menu["catatan"];
-                $detailOrder->save();
+        if (!$latestOrder->is_done  == false) {
 
-                return $latestOrder;
-            }
-            }
-        } else {
-            // Create a new order
+                      // Create a new order
             $order = Order::create($payload);
             $order->user_id = $user->id;
             $order->is_done = false;
@@ -133,6 +123,19 @@ class OrderController extends Controller
             }
 
             return $order;
+        } else {
+                  foreach ($payload["menu"] as $menu) {
+                    $detailOrder = DetailOrder::create();
+                    $detailOrder->order_id = $latestOrder->id;
+                    $detailOrder->user_id =  $user->id;
+                    $detailOrder->menu_id = $menu["id"];
+                    $detailOrder->stok = $menu["stok"];
+                    $detailOrder->merchant_id = $payload["merchant_id"];
+                    $detailOrder->catatan = $menu["catatan"];
+                    $detailOrder->save();
+
+                    return $latestOrder;
+            }
         }
     }
 
