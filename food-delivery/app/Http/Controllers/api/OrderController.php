@@ -96,8 +96,9 @@ class OrderController extends Controller
         
         $latestOrder = Order::firstWhere("user_id", $user->id);
 
-        if ($latestOrder->is_done == false) {
-            foreach ($payload["menu"] as $menu) {
+        if ($latestOrder) {
+            if ($latestOrder->is_done == false) {
+                foreach ($payload["menu"] as $menu) {
                 $detailOrder = DetailOrder::create();
                 $detailOrder->order_id = $latestOrder->id;
                 $detailOrder->user_id =  $user->id;
@@ -108,6 +109,7 @@ class OrderController extends Controller
                 $detailOrder->save();
 
                 return $latestOrder;
+            }
             }
         } else {
             // Create a new order
